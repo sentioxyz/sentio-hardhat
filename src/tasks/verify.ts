@@ -10,10 +10,11 @@ task('sentio:verify', 'upload contract and verify')
   )
   .addParam('address', 'on-chain address')
   .addOptionalParam('chain', 'chain ID')
+  .addOptionalParam('cargs', 'constructor args')
   .setAction(verifyContract)
 
 async function verifyContract(
-  { contract, address, chain }: any,
+  { contract, address, chain, cargs: constructorArgs }: any,
   hre: HardhatRuntimeEnvironment
 ) {
   if (!contract) {
@@ -22,5 +23,9 @@ async function verifyContract(
   if (!address) {
     throw new HardhatPluginError(PLUGIN_NAME, 'missing address')
   }
-  await hre.sentio.upload(contract, { address, chainID: chain })
+  await hre.sentio.upload({
+    contractName: contract,
+    verify: { address, chainID: chain },
+    constructorArgs
+  })
 }
