@@ -32,10 +32,12 @@ export class SentioPlugin {
     this.sentioService = new SentioService(host, apiKey)
   }
 
-  public async upload(
+  public async upload(args: {
     contractName: string,
-    verify?: { address: string; chainID?: string }
-  ) {
+    verify?: { address: string; chainID?: string },
+    constructorArgs?: string
+  }) {
+    const { contractName, verify, constructorArgs } = args
     console.log('uploading', contractName)
     const job = await getCompilationJob(this.env, contractName)
     const source: { [path: string]: string } = {}
@@ -51,7 +53,8 @@ export class SentioPlugin {
         multiFile: {
           compilerSettings: JSON.stringify(job.getSolcConfig().settings),
           source
-        }
+        },
+        constructorArgs
       }
     }
     if (this.env.config.sentio?.project) {
